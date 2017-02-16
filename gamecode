@@ -1,0 +1,132 @@
+import random
+from lxml import html
+import requests
+
+page = requests.get('http://members.optusnet.com.au/charles57/Creative/Techniques/random_words.htm')
+tree = html.fromstring(page.content)
+
+words = tree.xpath('//p/text()')
+
+for i in words:
+    if '\n' in i:
+        i = i.strip("\n")
+
+class game():
+    def __init__(self):
+        self.word = words[random.randint(0,len(words)-1)]
+        self.goal = len(self.word)
+        self.current = 0
+        self.loss = 0
+        self.playing = True
+        self.chosen = []
+        self.foundvalues = []
+        self.loss0=("____ \n"
+                    "| |  \n"
+                    "|    \n"
+                    "|    \n"
+                    "|    \n"
+                    "|_____")
+        self.loss1=("____ \n"
+                    "| |  \n"
+                    "| o  \n"
+                    "|    \n"
+                    "|    \n"
+                    "|_____")
+        self.loss2=("____ \n"
+                    "| |  \n"
+                    "| o  \n"
+                    "|/|  \n"
+                    "|    \n"
+                    "|_____")
+        self.loss3=("____ \n"
+                    "| |  \n"
+                    "| o  \n"
+                    "|/|\ \n"
+                    "|    \n"
+                    "|_____")
+        self.loss4=("____ \n"
+                    "| |  \n"
+                    "| o  \n"
+                    "|/|\ \n"
+                    "|/   \n"
+                    "|_____")
+        self.loss5=("____ \n"
+                    "| |  \n"
+                    "| o  \n"
+                    "|/|\ \n"
+                    "|/ \ \n"
+                    "|_____")
+      
+    def findOccurences(self,s, ch):
+        return [i for i, letter in enumerate(s) if letter == ch]
+
+    def initiate(self):
+        print('Type exit to leave')
+        
+        for i in range(len(self.word)-1):
+            self.foundvalues.append('_')
+            
+        self.word = self.word.lower()
+            
+        if ' ' in self.word:
+            self.word.remove(' ')
+                    
+        print(self.loss0)
+            
+        while self.playing == True:
+            
+            guess = input('Please guess a letter-')
+            
+            locs = self.findOccurences(self.word,guess)
+            
+            if guess == 'exit':
+                print("Thanks for playing!")
+                self.playing = False
+                break
+            
+            if guess in self.word and guess not in self.chosen and len(guess) <= 1:
+                occurences = self.word.count(guess)
+                for i in range(occurences):
+                    self.current+=1
+                
+            if guess in self.chosen:
+                print("You've already guessed that one")
+                
+            if guess not in self.word:
+                self.loss+=1
+                
+            self.chosen.append(guess)
+            
+            if self.loss == 0:
+                print(self.loss0)
+                
+            if self.loss == 1:
+                print(self.loss1)
+                    
+            if self.loss == 2:
+                print(self.loss2)
+                
+            if self.loss == 3:
+                print(self.loss3)
+                    
+            if self.loss == 4:
+                print(self.loss4)
+                    
+            if self.loss == 5:
+                print(self.loss5)
+                print("game over! \nThe word was",self.word)
+                self.playing = False
+            
+            if self.current == len(self.word)-1:
+                print("Congratulations! You win")
+                self.playing = False
+                        
+            for i in range(len(locs)):
+                self.foundvalues[locs[i]-1] = guess
+
+            for i in range(len(self.foundvalues)):
+                print(self.foundvalues[i],end=' ')
+                                
+hang = game()
+
+hang.initiate()    
